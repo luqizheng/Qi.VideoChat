@@ -11,7 +11,7 @@ var Express = require('express');
 var Http = require('http')
 var IO = require('socket.io');
 var UserPool = require('./UserPool');
-//var DB=require('./db');
+var DB=require('./db');
 var app = Http.createServer(Express())
 var io = IO(app);
 
@@ -52,7 +52,7 @@ io.on('connect', function (socket:SocketIO.Socket) {
         var toUser=UserPool.get(data.to);
         if(toUser){
             console.log('send it to client:'+JSON.stringify(data));
-            //DB.InsertMsg(data);
+            DB.InsertMsg(data);
             toUser.socket.emit('msg',data);
         }
     })
