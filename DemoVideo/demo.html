@@ -1,0 +1,340 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RealWorld - My ASP.NET Application</title>
+    <link href="./Content/Site.css" rel="stylesheet" type="text/css"/>
+    <link href="./Content/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <script src="./Scripts/modernizr-2.6.2.js"></script>
+    <script src="./Scripts/jquery-1.11.2.min.js"></script>
+    <script src="./Scripts/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Application name</a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="container body-content">
+
+
+    <h2>RealWorld</h2>
+    <!--
+jquery 是必须的2
+-->
+    <script src="./Scripts/socket.io-1.3.2.min.js"></script>
+    <script src="./Scripts/ChatServices.Client.js"></script>
+    <script type="text/javascript" src="./Scripts/jquery.videoIo.js"></script>
+    <div class="row">
+        <div class="col-xs-9">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    摄像头
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div id="statusRadio">
+                                <label>
+                                    上线
+                                    <input type="radio" name="status" value="1"/>
+                                </label>
+
+                                <label>
+                                    下线
+                                    <input type="radio" name="status" value="0"/>
+                                </label>
+
+                                <label>
+                                    忙
+                                    <input type="radio" name="status" value="2"/>
+                                </label>
+
+
+                            </div>
+
+                            <label id="localVideo_NearID"></label>
+                            <object data="Flash/VideoIO11.swf"
+                                    type="application/x-shockwave-flash"
+                                    id="localVideo" width="320" height="240">
+                                <param name="allowFullScreen" value="false">
+                                <param name="allowScriptAccess" value="always">
+                                <param name="bgcolor" value="#000000">
+                                <param name="movie" value="Flash/VideoIO11.swf">
+                                <param name="flashVars" value="controls=true&live=false"/>
+                            </object>
+                            <hr/>
+                            <label id="remoteVideo_NearID"></label>
+                            <object data="Flash/VideoIO11.swf"
+                                    type="application/x-shockwave-flash"
+                                    id="remoteVideo" width="320" height="240">
+                                <param name="allowFullScreen" value="false">
+                                <param name="allowScriptAccess" value="always">
+                                <param name="bgcolor" value="#0f0f0f">
+                                <param name="movie" value="Flash/VideoIO11.swf">
+                                <param name="flashVars" value="controls=true&live=false"/>
+                            </object>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top: 20px">
+                        <div class="col-xs-12">
+
+                            <div style="width: 320px; height: 120px; overflow: auto" id="listMsg" class="well">
+                                <ul>
+                                </ul>
+                            </div>
+
+                            <form class="form-inline" id="msg-form">
+                                <input type="text" value="input something" id="content" disabled="disabled"/>
+                                <input type="button" id="send" value="Send" disabled="disabled"/>
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="col-xs-3">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    Friend list
+                </div>
+                <div class="panel-body">
+                    <button id="refreshList">Refresh</button>
+                    <div>
+                        <ul id="streamList"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <textarea id="logger" class="col-md-12" style="height:200px;width:400px">
+
+            </textarea>
+        </div>
+    </div>
+
+
+    <script type="text/javascript">
+        var loginId = getQueryStringByName('loginid');
+        var name = loginId + "-name";
+
+        var toLoginId = ''
+        //用来标记你现在正在和那个user正在通话
+
+        if (!loginId) {
+            alert("请用url输入loginid");
+        }
+        console.log(loginId+'正在登陆..');
+        var $userStatus;
+
+        $(document).ready(function () {
+            /*
+             控制用户状态
+             */
+            $userStatus = new UserStatus("http://localhost:3000", {
+                loginId: loginId,
+                type: 'manager',
+                name: name,
+                onMsg: function (msg) {
+
+
+
+                    switch (msg.content.type) {
+                        case 'request-meeting':
+                            //这里的msg.content结构由 $("#streamList").on('click', 'a', function ()
+                            //构件的，接收什么就是由发送什么来决定
+
+                            //msgFromName又nodejs服务自动加上
+                            var alertMsg = msg.fromName + '请求与你视频，是否接受?';
+
+                            if (confirm(alertMsg)) {
+                                //播放对方的Id
+                                var remoteId = msg.content.remoteId;
+                                var streamName = msg.content.streamName;
+                                console.log('accept chat and use $remote to play，id:' + remoteId + 'streamName:' + streamName);
+                                $("#remoteVideo_NearID").text("Farid:" + remoteId + ",name:" + streamName);
+                                $remote.videoIo('play', remoteId, streamName); //要摄像头播放对方的视频
+                                //这里打开文字对话框
+                                $("#msg-form input").prop('disabled', false);
+                                toLoginId = msg.from;
+
+                                //发布自己的Id
+                                console.log('准备发布一个Stream。。。')
+                                $video.videoIo('publish', msg.to, function (myId) {
+                                    console.log('自己发布一个视频信号id:' + myId + "strName:" + msg.to + ",并且把Id发到对方那里");
+                                    $("#localVideo_NearID").text("id:" + myId + ",streamName:" + msg.to);
+
+                                    $userStatus.send(msg.from, {
+                                        type: 'accept-meeting',
+                                        remoteId: myId,
+                                        streamName: msg.to,
+                                        accept: true
+                                    });
+                                });
+
+
+                            } else {
+                                $userStatus.send(msg.from, {accept: false, type: 'accept-meeting'});
+                            }
+                            break;
+                        case 'accept-meeting':
+                            if (msg.content.accept) {
+                                //对方已经接受，请参考上面那个case 'request-meeting'这个内容部分
+                                var remoteId = msg.content.remoteId;
+                                var streamName = msg.content.streamName;
+                                console.log('对方已经接受视频请求，remoteId:' + remoteId + ' streamname:' + streamName + '因此要#remote flash组件进行播放');
+                                $("#remoteVideo_NearID").text("Farid:" + remoteId + ",name:" + streamName);
+                                $remote.videoIo('play', remoteId, streamName);
+                                //这里打开文字对话框
+                                $("#msg-form input").prop('disabled', false);
+                                toLoginId = msg.from;
+
+                            } else {
+                                console.log('对方拒绝接受视频');
+                            }
+                            break;
+                        case 'msg':
+                            //普通文本
+                            $("#listMsg ul").append('<li>' + msg.fromName + '(' + msg.from + '):' + msg.content.msg + '</li>');
+                            break;
+                    }
+                },
+                onOtherStatusChanged: function (user) {
+                    //其他用户上线，状态改变都会触发这个时间。
+                    console.log('用户' + user.loginId + '状态发生改变 0：offline ，1：online，2：busy，当前状态是' + user.status);
+                    $userStatus.list(BuildFriendList);
+                }
+            });
+            //用来录制本地摄像头
+            var $video = $("#localVideo").videoIo();
+            var $remote = $("#remoteVideo").videoIo();
+
+            //改变状态
+            $("#statusRadio input").click(function () {
+                $userStatus.changeStatus($(this).val());
+            });
+
+            //连接服务器，用来上线
+            $userStatus.connect(function (val) {
+                $userStatus.list(BuildFriendList);
+                console.log('success connect to NODEJS Serverces.');
+            });
+
+
+            $("#send").click(function () {
+                if (toLoginId) {
+                    var sendContent = {
+                        msg: $("#content").val(),
+                        type: 'msg'
+                    };
+                    $("#listMsg ul").append('<li>' + $userStatus.options.name + '(' + $userStatus.options.loginId + '):' + ':' + sendContent.msg + '</li>');
+                    $userStatus.send(toLoginId, sendContent);
+                }
+            });
+
+            $("#refreshList").click(function () {
+                $userStatus.list(BuildFriendList);
+            });
+
+            $("#streamList").on('click', 'a', function () {
+                var targetLoginid = $(this).attr('href').substr(1);
+                console.log("开始对话请求。。")
+                if (confirm("是否开始请求与" + $(this).text() + "进行通信")) {
+
+                    $video.videoIo('publish', loginId, function (id, streamName) {
+
+                        console.log('自己发布一个视频信号id:' + id + "streamName:" + streamName + ",并且把Id发到对方那里");
+                        $("#localVideo_NearID").text("id:" + id + ",streamName:" + streamName);
+                        //#video发布成功后，会产生一个id和一个streamName，用来标示用来视频的
+
+                        console.log('send request-metting');
+                        $userStatus.send(targetLoginid, {
+                            remoteId: id,
+                            streamName: streamName,
+                            name: name, //global定义的名称
+                            content: name + "请求与你视频通讯",
+                            type: 'request-meeting' //一个标记，用于在 onMsg进行处理
+                        });
+                    });
+
+                }
+            });
+        });
+
+        function BuildFriendList(users) {
+            var ary = [];
+            $(users).each(function (a) {
+                if (a != 0)
+                    ary.push("<li><a href='#" + this.loginId + "'>" + this.name + ';' + this.status + "</a></li>");
+                else {
+                    ary.push("<li>MySelf:" + this.loginId + ';' + this.status + "</li>");
+                }
+            });
+            $("#streamList").html('').append(ary.join(""));
+        }
+        function getQueryStringByName(name) {
+
+            var result = location.search.match(new RegExp("[\?\&]" + name + "=([^\&]+)", "i"));
+
+            if (result == null || result.length < 1) {
+
+                return "";
+
+            }
+
+            return result[1];
+
+        }
+
+        console = {
+            log: function (str) {
+                var output=str;
+                if (typeof str == 'object') {
+                    if (JSON && JSON.stringify()) {
+                        output = JSON.stringify(str) + '\r\n';
+                    }
+                    else {
+                        var s=[];
+                        for(var key in str){
+                            if(!$.isFunction(str[key]))
+                            {
+                                s.push(str[key])
+                            }
+                        }
+                        output= '低版本浏览器无法显示对象全部属性'+ s.join('')+'\r\n';
+                    }
+                }
+
+                $("#logger").val($("#logger").val()+output);
+            }
+        }
+    </script>
+
+
+    <hr/>
+    <footer>
+        <p>&copy; 2015 - My ASP.NET Application</p>
+    </footer>
+</div>
+
+
+</body>
+</html>
