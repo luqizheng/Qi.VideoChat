@@ -66,11 +66,10 @@ function getFlashMovie(movieName) {
     // $("#viedio").videoIo('publish',nameOfStream,func); opt 请忽略的，不需要在参数中输入。
     var cmd = {
         publish: function (opt, nameOfStream, func) {
-
             var id = this.getProperty('nearID');
             var streamName = this.getProperty('publish');
             
-            if (!id) {
+            if (!streamName) {
                 //发布视频
                 var rtmfServer = opt.server ;
                 if(opt.developKey) {
@@ -81,7 +80,11 @@ function getFlashMovie(movieName) {
                 if (func) {
                     opt["_onPub"] = func; //不同的Stram要注意不能被覆盖掉因此用nameStream区分。避免冲突。
                 }
-                this.setProperty('src', rtmfServer);
+                try {
+                    this.setProperty('src', rtmfServer);
+                }catch(e){
+                    console.dir(e);
+                }
             } else {
                 func.call(this, id, streamName);
             }
@@ -140,27 +143,33 @@ function getFlashMovie(movieName) {
 
 //called by  window.onPropertyChange
 var _videioEv = {
-    nearID: function (id, opt) {
+    src: function (id, opt) {
         var self = this;
         $(['_onPub', '_onRec']).each(function () {
             var method = opt[this],methodName=this;
             if (method) {
+                delete opt[methodName];
                 setTimeout(function() {
                     method.call(self, self.getProperty('nearID'), self.getProperty('publish'));
-                    delete opt[methodName];
                 }, 1);
             }
         });
     },
+    nearID:function(id,opt){
+        _videioEv.src.call(this,id,opt);
+    },
     publish:function(id,opt){
-      _videioEv.call(this,id,opt);
+        _videioEv.src.call(this,id,opt);
     }
 };
 
-window.onPropertyChange = function (event) { //falsh-videoio call it
+ function onPropertyChange(event) { //falsh-videoio call it
     //options.onConnect(e.newValue);
     if (["nearID", "farID", 'publish', 'play', 'src'].indexOf(event.property)!=-1) {
-        console.log('property:' + event.property + ',objectID:' + event.objectID + ';newValue:' + event.newValue);
+        try {
+            console.log('property:' + event.property + ',objectID:' + event.objectID + ';newValue:' + event.newValue);
+        }
+        catch(e){}
     }
     var opt = globalOpts[event.objectID],
         target = getFlashMovie(event.objectID), method = _videioEv[event.property];
@@ -168,14 +177,3 @@ window.onPropertyChange = function (event) { //falsh-videoio call it
         method.call(target, event.newValue, opt);
     }
 };
-
-window.onReceiveData = function(event) {
-    var opt = globalOpts[event.objectID],
-        target = getFlashMovie(event.objectID),
-        method = opt.onReceive;
-    if (method) {
-        opt.onReceive.call(target, event.data, opt);
-    }
-    
-};
-
