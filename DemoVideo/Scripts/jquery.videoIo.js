@@ -2,13 +2,14 @@
 var globalOpts = {}; //保存option数据，因为object无法使用$.data保存数据.因此他是一个全局的静态的保存期，key值是id。因此要求object 中的flash要带有id
 function getFlashMovie(movieName) {
     var isIE = navigator.appName.indexOf("Microsoft") != -1;
-    return (isIE) ? window[movieName] : document[movieName];
+    var r= (isIE) ? window[movieName] : document[movieName];
+    return r;
 }
 (function ($) {
 
     var defOpts = {
         onReceive: false,//获取文字信息
-        server:"rtmp://114.215.155.217/myapp/" //"rtmfp://p2p.rtmfp.net/",//"rtmfp://stratus.rtmfp.net/",
+        server:"rtmp://114.215.155.217/myapp" //"rtmfp://p2p.rtmfp.net/",//"rtmfp://stratus.rtmfp.net/",
         //developKey: '18c74dfadbf34dd0b09701ee-48375d55fe46' //发布key
         /*_identity: false,//onlineion's id of rtmfp server,自动产生*/
         /*_streamName:"", //nameOfStream private key*/
@@ -162,7 +163,7 @@ window.onPropertyChange = function (event) { //falsh-videoio call it
         console.log('property:' + event.property + ',objectID:' + event.objectID + ';newValue:' + event.newValue);
     }
     var opt = globalOpts[event.objectID],
-        target = $('#' + event.objectID)[0], method = _videioEv[event.property];
+        target = getFlashMovie(event.objectID), method = _videioEv[event.property];
     if (method) {
         method.call(target, event.newValue, opt);
     }

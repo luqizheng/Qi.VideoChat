@@ -69,6 +69,7 @@ jquery 是必须的2
                             </div>
 
                             <label id="localVideo_NearID"></label>
+                            <!--
                             <object data="Flash/VideoIO11.swf"
                                     type="application/x-shockwave-flash"
                                     id="localVideo" width="320" height="240">
@@ -89,6 +90,52 @@ jquery 是必须的2
                                 <param name="movie" value="Flash/VideoIO11.swf">
                                 <param name="flashVars" value="controls=true&live=false"/>
                             </object>
+                            -->
+
+                            <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"
+                                    id="localVideo" width="320" height="240"
+                                    codebase="http://fpdownload.macromedia.com/get/flashplayer/current/swflash.cab">
+                                <param name="movie" value="Flash/VideoIO11.swf" />
+                                <param name="quality" value="high" />
+                                <param name="bgcolor" value="#000000" />
+                                <param name="allowFullScreen" value="true" />
+                                <param name="allowScriptAccess" value="always" />
+                                <param name="flashVars" value="controls=true" />
+                                <embed src="Flash/VideoIO11.swf" quality="high" bgcolor="#000000"
+                                       width="320" height="240" name="localVideo" align="middle"
+                                       play="true" loop="false" quality="high"
+                                       allowFullScreen="true"
+                                       allowScriptAccess="sameDomain"
+                                       flashVars="controls=true"
+                                       type="application/x-shockwave-flash"
+                                       pluginspage="http://www.adobe.com/go/getflashplayer">
+                                    Please install Flash Player version 10 or later!
+                                </embed>
+                            </object>
+                            <hr>
+
+
+                            <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"
+                                    id="video1" width="320" height="240"
+                                    remoteVideo="http://fpdownload.macromedia.com/get/flashplayer/current/swflash.cab">
+                                <param name="movie" value="Flash/VideoIO11.swf" />
+                                <param name="quality" value="high" />
+                                <param name="bgcolor" value="#000000" />
+                                <param name="allowFullScreen" value="true" />
+                                <param name="allowScriptAccess" value="always" />
+                                <param name="flashVars" value="controls=true" />
+                                <embed src="Flash/VideoIO11.swf" quality="high" bgcolor="#000000"
+                                       width="320" height="240" name="remoteVideo" align="middle"
+                                       play="true" loop="false" quality="high"
+                                       allowFullScreen="true"
+                                       allowScriptAccess="sameDomain"
+                                       flashVars="controls=true"
+                                       type="application/x-shockwave-flash"
+                                       pluginspage="http://www.adobe.com/go/getflashplayer">
+                                    Please install Flash Player version 10 or later!
+                                </embed>
+                            </object>
+
                         </div>
                     </div>
                     <div class="row" style="margin-top: 20px">
