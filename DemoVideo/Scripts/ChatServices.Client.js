@@ -19,7 +19,16 @@ function UserStatus(url, options) {
 }
 
 UserStatus.prototype.connect = function (callBack) {
-    this.socket = io.connect(this.url);
+
+    /*var isIE=!!window.ActiveXObject;
+    var isIE6=isIE&&!window.XMLHttpRequest;
+    var isIE8=isIE&&!!document.documentMode;
+    var isIE7=isIE&&!isIE6&&!isIE8;
+    if(isIE6||isIE7||isIE8)
+        this.socket = io.connect(this.url,{transports:['jsonp-polling']});
+    else*/
+    //io.set('transports', );
+    this.socket = io.connect(this.url);//,{transports:['websocket','flashsocket', 'htmlfile', 'xhr-polling', 'jsonp-polling']});
     var self = this;
     this.socket.on('valid', function () {
         self.validate(self.options.loginId, self.options.ssoToken, self.options.type, self.options.name);
@@ -42,7 +51,7 @@ UserStatus.prototype.connect = function (callBack) {
     });
 }
 UserStatus.prototype.validate = function (loginId, ssoToken, type,name) {
-    //console.log('send valid loginid' + loginId + 'ssoToken:' + ssoToken + ',type:' + type);
+    //loggerConsole.log('send valid loginid' + loginId + 'ssoToken:' + ssoToken + ',type:' + type);
     var senddata = {
         name: name,
         loginId: loginId,

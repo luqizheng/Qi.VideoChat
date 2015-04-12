@@ -83,7 +83,7 @@ function getFlashMovie(movieName) {
                 try {
                     this.setProperty('src', rtmfServer);
                 }catch(e){
-                    console.dir(e);
+                    //loggerConsole.dir(e);
                 }
             } else {
                 func.call(this, id, streamName);
@@ -165,12 +165,12 @@ var _videioEv = {
 
  function onPropertyChange(event) { //falsh-videoio call it
     //options.onConnect(e.newValue);
-    if (["nearID", "farID", 'publish', 'play', 'src'].indexOf(event.property)!=-1) {
+    /*if (["nearID", "farID", 'publish', 'play', 'src'].indexOf(event.property)!=-1) {
         try {
-            console.log('property:' + event.property + ',objectID:' + event.objectID + ';newValue:' + event.newValue);
+            loggerConsole.log('property:' + event.property + ',objectID:' + event.objectID + ';newValue:' + event.newValue);
         }
         catch(e){}
-    }
+    }*/
     var opt = globalOpts[event.objectID],
         target = getFlashMovie(event.objectID), method = _videioEv[event.property];
     if (method) {

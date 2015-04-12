@@ -1,16 +1,42 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <meta name="renderer" content="ie-comp|webkit|ie-stand">
     <title>RealWorld - My ASP.NET Application</title>
     <link href="./Content/Site.css" rel="stylesheet" type="text/css"/>
     <link href="./Content/bootstrap.min.css" rel="stylesheet" type="text/css"/>
     <script src="./Scripts/modernizr-2.6.2.js"></script>
     <script src="./Scripts/jquery-1.11.2.min.js"></script>
     <script src="./Scripts/bootstrap.min.js"></script>
+
+    <script src="./Scripts/json2.js"></script>
+
+    <script type="text/javascript">
+        var loggerConsole = {
+            log: function (str) {
+                var output=str;
+                if (typeof str == 'object') {
+                    if (JSON && JSON.stringify()) {
+                        output = JSON.stringify(str) + '\r\n';
+                    }
+                    else {
+                        var s=[];
+                        for(var key in str){
+                            if(!$.isFunction(str[key]))
+                            {
+                                s.push(str[key])
+                            }
+                        }
+                        output= '低版本浏览器无法显示对象全部属性'+ s.join('')+'\r\n';
+                    }
+                }
+
+                $("#logger").val($("#logger").val()+output);
+            }
+        }
+    </script>
 </head>
 <body>
 <div class="navbar navbar-inverse navbar-fixed-top">
@@ -38,6 +64,7 @@
 jquery 是必须的2
 -->
     <script src="./Scripts/socket.io-1.3.2.min.js"></script>
+
     <script src="./Scripts/ChatServices.Client.js"></script>
     <script type="text/javascript" src="./Scripts/jquery.videoIo.js"></script>
     <div class="row">
@@ -69,7 +96,6 @@ jquery 是必须的2
                             </div>
 
                             <label id="localVideo_NearID"></label>
-                            <!--
                             <object data="Flash/VideoIO11.swf"
                                     type="application/x-shockwave-flash"
                                     id="localVideo" width="320" height="240">
@@ -90,52 +116,6 @@ jquery 是必须的2
                                 <param name="movie" value="Flash/VideoIO11.swf">
                                 <param name="flashVars" value="controls=true&live=false"/>
                             </object>
-                            -->
-
-                            <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"
-                                    id="localVideo" width="320" height="240"
-                                    codebase="http://fpdownload.macromedia.com/get/flashplayer/current/swflash.cab">
-                                <param name="movie" value="Flash/VideoIO11.swf" />
-                                <param name="quality" value="high" />
-                                <param name="bgcolor" value="#000000" />
-                                <param name="allowFullScreen" value="true" />
-                                <param name="allowScriptAccess" value="always" />
-                                <param name="flashVars" value="controls=true" />
-                                <embed src="Flash/VideoIO11.swf" quality="high" bgcolor="#000000"
-                                       width="320" height="240" name="localVideo" align="middle"
-                                       play="true" loop="false" quality="high"
-                                       allowFullScreen="true"
-                                       allowScriptAccess="sameDomain"
-                                       flashVars="controls=true"
-                                       type="application/x-shockwave-flash"
-                                       pluginspage="http://www.adobe.com/go/getflashplayer">
-                                    Please install Flash Player version 10 or later!
-                                </embed>
-                            </object>
-                            <hr>
-
-
-                            <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"
-                                    id="video1" width="320" height="240"
-                                    remoteVideo="http://fpdownload.macromedia.com/get/flashplayer/current/swflash.cab">
-                                <param name="movie" value="Flash/VideoIO11.swf" />
-                                <param name="quality" value="high" />
-                                <param name="bgcolor" value="#000000" />
-                                <param name="allowFullScreen" value="true" />
-                                <param name="allowScriptAccess" value="always" />
-                                <param name="flashVars" value="controls=true" />
-                                <embed src="Flash/VideoIO11.swf" quality="high" bgcolor="#000000"
-                                       width="320" height="240" name="remoteVideo" align="middle"
-                                       play="true" loop="false" quality="high"
-                                       allowFullScreen="true"
-                                       allowScriptAccess="sameDomain"
-                                       flashVars="controls=true"
-                                       type="application/x-shockwave-flash"
-                                       pluginspage="http://www.adobe.com/go/getflashplayer">
-                                    Please install Flash Player version 10 or later!
-                                </embed>
-                            </object>
-
                         </div>
                     </div>
                     <div class="row" style="margin-top: 20px">
@@ -191,14 +171,14 @@ jquery 是必须的2
         if (!loginId) {
             alert("请用url输入loginid");
         }
-        console.log(loginId+'正在登陆..');
+        loggerConsole.log(loginId+'正在登陆..');
         var $userStatus;
 
         $(document).ready(function () {
             /*
              控制用户状态
              */
-            $userStatus = new UserStatus("http://localhost:3000", {
+            $userStatus = new UserStatus("ws://localhost:3000", {
                 loginId: loginId,
                 type: 'manager',
                 name: name,
@@ -218,7 +198,7 @@ jquery 是必须的2
                                 //播放对方的Id
                                 var remoteId = msg.content.remoteId;
                                 var streamName = msg.content.streamName;
-                                console.log('accept chat and use $remote to play，id:' + remoteId + 'streamName:' + streamName);
+                                loggerConsole.log('accept chat and use $remote to play，id:' + remoteId + 'streamName:' + streamName);
                                 $("#remoteVideo_NearID").text("Farid:" + remoteId + ",name:" + streamName);
                                 $remote.videoIo('play', remoteId, streamName); //要摄像头播放对方的视频
                                 //这里打开文字对话框
@@ -226,9 +206,9 @@ jquery 是必须的2
                                 toLoginId = msg.from;
 
                                 //发布自己的Id
-                                console.log('准备发布一个Stream。。。')
+                                loggerConsole.log('准备发布一个Stream。。。')
                                 $video.videoIo('publish', msg.to, function (myId) {
-                                    console.log('自己发布一个视频信号id:' + myId + "strName:" + msg.to + ",并且把Id发到对方那里");
+                                    loggerConsole.log('自己发布一个视频信号id:' + myId + "strName:" + msg.to + ",并且把Id发到对方那里");
                                     $("#localVideo_NearID").text("id:" + myId + ",streamName:" + msg.to);
 
                                     $userStatus.send(msg.from, {
@@ -249,7 +229,7 @@ jquery 是必须的2
                                 //对方已经接受，请参考上面那个case 'request-meeting'这个内容部分
                                 var remoteId = msg.content.remoteId;
                                 var streamName = msg.content.streamName;
-                                console.log('对方已经接受视频请求，remoteId:' + remoteId + ' streamname:' + streamName + '因此要#remote flash组件进行播放');
+                                loggerConsole.log('对方已经接受视频请求，remoteId:' + remoteId + ' streamname:' + streamName + '因此要#remote flash组件进行播放');
                                 $("#remoteVideo_NearID").text("Farid:" + remoteId + ",name:" + streamName);
                                 $remote.videoIo('play', remoteId, streamName);
                                 //这里打开文字对话框
@@ -257,7 +237,7 @@ jquery 是必须的2
                                 toLoginId = msg.from;
 
                             } else {
-                                console.log('对方拒绝接受视频');
+                                loggerConsole.log('对方拒绝接受视频');
                             }
                             break;
                         case 'msg':
@@ -268,7 +248,7 @@ jquery 是必须的2
                 },
                 onOtherStatusChanged: function (user) {
                     //其他用户上线，状态改变都会触发这个时间。
-                    console.log('用户' + user.loginId + '状态发生改变 0：offline ，1：online，2：busy，当前状态是' + user.status);
+                    loggerConsole.log('用户' + user.loginId + '状态发生改变 0：offline ，1：online，2：busy，当前状态是' + user.status);
                     $userStatus.list(BuildFriendList);
                 }
             });
@@ -284,7 +264,7 @@ jquery 是必须的2
             //连接服务器，用来上线
             $userStatus.connect(function (val) {
                 $userStatus.list(BuildFriendList);
-                console.log('success connect to NODEJS Serverces.');
+                loggerConsole.log('success connect to NODEJS Serverces.');
             });
 
 
@@ -305,16 +285,16 @@ jquery 是必须的2
 
             $("#streamList").on('click', 'a', function () {
                 var targetLoginid = $(this).attr('href').substr(1);
-                console.log("开始对话请求。。")
+                loggerConsole.log("开始对话请求。。")
                 if (confirm("是否开始请求与" + $(this).text() + "进行通信")) {
 
                     $video.videoIo('publish', loginId, function (id, streamName) {
 
-                        console.log('自己发布一个视频信号id:' + id + "streamName:" + streamName + ",并且把Id发到对方那里");
+                        loggerConsole.log('自己发布一个视频信号id:' + id + "streamName:" + streamName + ",并且把Id发到对方那里");
                         $("#localVideo_NearID").text("id:" + id + ",streamName:" + streamName);
                         //#video发布成功后，会产生一个id和一个streamName，用来标示用来视频的
 
-                        console.log('send request-metting');
+                        loggerConsole.log('send request-metting');
                         $userStatus.send(targetLoginid, {
                             remoteId: id,
                             streamName: streamName,
@@ -353,28 +333,7 @@ jquery 是必须的2
 
         }
 
-        console = {
-            log: function (str) {
-                var output=str;
-                if (typeof str == 'object') {
-                    if (JSON && JSON.stringify()) {
-                        output = JSON.stringify(str) + '\r\n';
-                    }
-                    else {
-                        var s=[];
-                        for(var key in str){
-                            if(!$.isFunction(str[key]))
-                            {
-                                s.push(str[key])
-                            }
-                        }
-                        output= '低版本浏览器无法显示对象全部属性'+ s.join('')+'\r\n';
-                    }
-                }
 
-                $("#logger").val($("#logger").val()+output);
-            }
-        }
     </script>
 
 
