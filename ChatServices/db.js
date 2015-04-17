@@ -24,7 +24,7 @@ var config = {
 };
 var insertSql="Insert into chat_record (loginidTo,loginIdFrom,createTime,jsonContent) values(?,?,?,?)";
 /*
-CREATE  TABLE `vichat`.`chat_record` (
+CREATE  TABLE IF NOT EXISTS `chat_record` (
 `id` INT(20) NOT NULL AUTO_INCREMENT ,
 `createTime` DATETIME NULL DEFAULT now() ,
 `loginidTo` VARCHAR(45) NULL ,

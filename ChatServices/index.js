@@ -5,14 +5,18 @@
 /// <reference path='types/express/express.d.ts' />
 /// <reference path='types/node/node.d.ts' />
 /// <reference path='types/express/express-middleware.d.ts' />
+/// <reference path='./db/db.ts' />
 var Users = require('./user');
 var Express = require('express');
 var Http = require('http');
 var IO = require('socket.io');
-var UserPool = require('./UserPool');
-var DB = require('./db');
+var UserPool = require('./userPool');
+var Cfg = require('./cfg/cfgMgr');
 var app = Http.createServer(Express());
 var io = IO(app);
+Cfg.getDbCfg(function (db) {
+    db.Init();
+});
 //DB.InsertMsg({to:'lk',from:'kjk'})
 io.on('connect', function (socket) {
     console.log('connect');
@@ -42,7 +46,9 @@ io.on('connect', function (socket) {
         var toUser = UserPool.get(data.to);
         if (toUser) {
             console.log('send it to client:' + JSON.stringify(data));
-            DB.InsertMsg(data);
+            Cfg.getDbCfg(function (db) {
+                db.Insert(data);
+            });
             toUser.socket.emit('msg', data);
         }
     });

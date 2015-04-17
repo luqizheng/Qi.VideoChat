@@ -4,7 +4,7 @@
 
 /// <reference path='types/hashmap/hashmap.d.ts' />
 import Users = require('./user');
-import Map=require('hashmap');
+var Map=require('hashmap');
 
 var userPool = new Map();
 var scoketPool = new Map();
