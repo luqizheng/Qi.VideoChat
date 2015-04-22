@@ -24,7 +24,9 @@ export class abstractDb {
     }
 
     public Insert(Msg:notifyTypes.Msg) {
+    }
 
+    public InsertFromTemplate(msg:notifyTypes.MsgTemplate){
 
     }
 

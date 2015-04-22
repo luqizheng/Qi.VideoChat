@@ -45,7 +45,7 @@ function remove(socket) {
         console.log('remove loginid form UserPool ' + loginId);
         var user = userPool.get(loginId);
         if (user) {
-            user.status = 0 /* offline */;
+            user.status = Users.UserStatus.offline;
             socket.broadcast.emit('status-changed', user.toEntity());
         }
         delete scoketPool.remove(socket.id);

@@ -1,14 +1,31 @@
 /**
  * Created by leo-home on 2015/4/16.
  */
-/// <reference path='types/socket.io/socket.io.d.ts' />
-/// <reference path='types/express/express.d.ts' />
-/// <reference path='types/node/node.d.ts' />
-/// <reference path='types/express/express-middleware.d.ts' />
 var Msg = (function () {
     function Msg() {
     }
     return Msg;
 })();
 exports.Msg = Msg;
-//# sourceMappingURL=NotifyType.js.map
+function toContent(strTemplate, variabled, user) {
+    var reg = /\[{1}[^[].+?\]{1}/g;
+    var s = strTemplate.replace(reg, function (word) {
+        word = word.replace('[', '').replace(']');
+        if (user[word]) {
+            return user[word];
+        }
+        if (variabled[word]) {
+            return variabled[word];
+        }
+        return word;
+    });
+    console.log("toContent:" + s);
+    return s;
+}
+var MsgTemplate = (function () {
+    function MsgTemplate() {
+    }
+    return MsgTemplate;
+})();
+exports.MsgTemplate = MsgTemplate;
+//# sourceMappingURL=notifyType.js.map

@@ -16,6 +16,8 @@ var abstractDb = (function () {
     }
     abstractDb.prototype.Insert = function (Msg) {
     };
+    abstractDb.prototype.InsertFromTemplate = function (msg) {
+    };
     abstractDb.prototype.List = function (msg, index, size, callback) {
     };
     abstractDb.prototype.Init = function () {

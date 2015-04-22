@@ -7,6 +7,7 @@ function createDb(config) {
         case 'mysql':
             return new MysqlDB.mysqlDb(config);
             break;
+        case 'mongodb':
         default:
             throw new Error(config.dbtype + 'is invalide db type.');
             break;
