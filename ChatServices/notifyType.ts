@@ -15,16 +15,16 @@ export class Msg{
 }
 
 function toContent(strTemplate:string, variabled:Array<any>, user:User.DTOUser) {
-    var reg = /\[{1}[^[].+?\]{1}/g
-    var s = strTemplate.replace(reg, function (word) {
-        word = word.replace('[', '').replace(']')
-        if (user[word]) {
-            return user[word]
+
+    var s = strTemplate.replace(/\[{1}[^[].+?\]{1}/g, function (word:any) {
+        var content = word.replace('[', '').replace(']')
+        if (user[content]) {
+            return user[content]
         }
-        if (variabled[word]) {
-            return variabled[word];
+        if (variabled[content]) {
+            return variabled[content];
         }
-        return word;
+        return content;
     })
     console.log("toContent:" + s);
     return s;

@@ -61,4 +61,4 @@ function get(loginId) {
     return user;
 }
 exports.get = get;
-//# sourceMappingURL=userPool.js.map
+//# sourceMappingURL=UserPool.js.map

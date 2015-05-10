@@ -8,16 +8,15 @@ var Msg = (function () {
 })();
 exports.Msg = Msg;
 function toContent(strTemplate, variabled, user) {
-    var reg = /\[{1}[^[].+?\]{1}/g;
-    var s = strTemplate.replace(reg, function (word) {
-        word = word.replace('[', '').replace(']');
-        if (user[word]) {
-            return user[word];
+    var s = strTemplate.replace(/\[{1}[^[].+?\]{1}/g, function (word) {
+        var content = word.replace('[', '').replace(']');
+        if (user[content]) {
+            return user[content];
         }
-        if (variabled[word]) {
-            return variabled[word];
+        if (variabled[content]) {
+            return variabled[content];
         }
-        return word;
+        return content;
     });
     console.log("toContent:" + s);
     return s;
