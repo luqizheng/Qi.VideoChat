@@ -10,7 +10,10 @@ var userPool = new Map();
 var scoketPool = new Map();
 
 export function add(user:Users.User) {
-
+    if(userPool.has(user.loginId)) {
+        var preUser = userPool.get(user.loginId)
+        user.socket.disconnect();
+    }
     userPool.set(user.loginId, user);
     scoketPool.set(user.socket.id, user.loginId);
     console.log('userLoginId:' + user.socket.id + ',socketId:' + user.loginId);

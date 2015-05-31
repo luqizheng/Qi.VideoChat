@@ -27,4 +27,4 @@ var MsgTemplate = (function () {
     return MsgTemplate;
 })();
 exports.MsgTemplate = MsgTemplate;
-//# sourceMappingURL=NotifyType.js.map
+//# sourceMappingURL=notifyType.js.map
