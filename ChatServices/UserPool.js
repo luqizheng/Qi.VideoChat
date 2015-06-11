@@ -28,7 +28,7 @@ function add(user) {
         }
         userPool.forEach(function (item, key) {
             //console.log('key:'+JSON.stringify(key));
-            //console.log('item.type == queryType.type. item.type:' + item.type + ',queryType.type:' + queryType.type);
+            console.log('item.type == queryType.type. item.type:' + item.type + ',queryType.type:' + queryType.type);
             if ((!queryType.type || item.type == queryType.type) && key != user.loginId) {
                 console.log(item.name);
                 result.push(item.toEntity());
@@ -49,7 +49,7 @@ function remove(socket) {
         console.log('remove loginid form UserPool ' + loginId);
         var user = userPool.get(loginId);
         if (user) {
-            user.status = 0 /* offline */;
+            user.status = Users.UserStatus.offline;
             socket.broadcast.emit('status-changed', user.toEntity());
         }
         delete scoketPool.remove(socket.id);

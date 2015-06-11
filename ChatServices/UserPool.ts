@@ -35,7 +35,7 @@ export function add(user:Users.User) {
 
         userPool.forEach(function (item:Users.User, key) {
             //console.log('key:'+JSON.stringify(key));
-            //console.log('item.type == queryType.type. item.type:' + item.type + ',queryType.type:' + queryType.type);
+            console.log('item.type == queryType.type. item.type:' + item.type + ',queryType.type:' + queryType.type);
 
             if ((!queryType.type || item.type == queryType.type) && key != user.loginId) {
                 console.log(item.name)

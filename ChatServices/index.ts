@@ -17,7 +17,6 @@ var UserPool = require('./userPool');
 var Cfg = require('./cfg/cfgMgr')
 var app = Http.createServer(Express())
 var io = IO(app);
-
 Cfg.getDbCfg(function (db) {
     db.Init();
 });

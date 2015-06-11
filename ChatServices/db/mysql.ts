@@ -2,12 +2,13 @@
  * Created by leo-home on 2015/4/16.
  */
 /* my mysql*/
-
+/// <reference path='../types/node/node.d.ts' />
+/// <reference path='../NotifyType.ts' />
+/// <reference path='../NotifyType.ts' />
 var mysql = require('mysql');
 var moment = require('moment')
 var poolModule = require('generic-pool');
-/// <reference path='../types/node/node.d.ts' />
-/// <reference path='../NotifyType.ts' />
+
 
 import notifyTypes=require('../NotifyType');
 import DB=require('./db')
