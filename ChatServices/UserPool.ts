@@ -7,16 +7,16 @@ import Users = require('./user');
 var Map=require('hashmap');
 
 var userPool = new Map();
-var scoketPool = new Map();
+//var scoketPool = new Map();
 
 export function add(user:Users.User) {
     if(userPool.has(user.loginId)) {
         var preUser = userPool.get(user.loginId)
         user.socket.disconnect();
     }
-    userPool.set(user.loginId, user);
-    scoketPool.set(user.socket.id, user.loginId);
-    console.log('userLoginId:' + user.socket.id + ',socketId:' + user.loginId);
+    userPool.set(user.socket.id, user);
+    //scoketPool.set(user.socket.id, user.loginId);
+    console.log('socket id:' + user.socket.id + ',loginid:' + user.loginId);
     //console.log('usertype :', user.type)
 
     user.socket.on('change-status', function (status:Users.UserStatus) {
@@ -37,7 +37,7 @@ export function add(user:Users.User) {
             //console.log('key:'+JSON.stringify(key));
             console.log('item.type == queryType.type. item.type:' + item.type + ',queryType.type:' + queryType.type);
 
-            if ((!queryType.type || item.type == queryType.type) && key != user.loginId) {
+            if ((!queryType.type || item.type == queryType.type) && item.loginId.toLocaleLowerCase() != user.loginId.toLocaleLowerCase()) {
                 console.log(item.name)
                 result.push(item.toEntity());
             }
@@ -55,17 +55,20 @@ export function add(user:Users.User) {
 export function remove(socket:SocketIO.Socket) {
 try {
     console.log('remove socket:' + socket.id)
-    var loginId = scoketPool.get(socket.id);
-    console.log('remove loginid form UserPool ' + loginId);
+    //var loginId = scoketPool.get(socket.id);
+    //console.log('remove loginid form UserPool ' + loginId);
 
-    var user = userPool.get(loginId);
+    var user = userPool.get(socket.id);
     if (user) {
         user.status = Users.UserStatus.offline;
         socket.broadcast.emit('status-changed', user.toEntity());
     }
+    else{
+        console.log("Not find the socket.Id with user")
+    }
 
-    delete scoketPool.remove(socket.id);
-    delete userPool.remove(loginId);
+    //delete scoketPool.remove(socket.id);
+    userPool.remove(socket.id);
 }
     catch(e){
         console.dir(e);
@@ -74,8 +77,9 @@ try {
 
 }
 
-export function get(loginId:string) {
-    var user = userPool.get(loginId);
+export function get(idOfUser:string) {
+    var socketId=idOfUser.split('_')[0];
+    var user = userPool.get(socketId);
     return user;
 
 }

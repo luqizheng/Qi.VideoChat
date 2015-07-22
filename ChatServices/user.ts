@@ -16,6 +16,7 @@ export class User {
         this.status = UserStatus.online;
         this.socket = socket;
     }
+
     name:string;
     ssoToke:string;
     socket:SocketIO.Socket
@@ -29,6 +30,7 @@ export class User {
         r.name=this.name;
         r.loginId=this.loginId;
         r.type=this.type;
+        r.id=this.socket.id+"_"+this.loginId;
         return r;
 
     }
@@ -40,6 +42,7 @@ export class DTOUser
     loginId:string;
     status:UserStatus;
     type:string;
+    id:string;
 }
 
 

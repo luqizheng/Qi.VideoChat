@@ -6,7 +6,6 @@
 /// <reference path='types/node/node.d.ts' />
 /// <reference path='types/express/express-middleware.d.ts' />
 /// <reference path='./db/db.ts' />
-var Users = require('./user');
 var Express = require('express');
 var Http = require('http');
 var IO = require('socket.io');
@@ -14,6 +13,7 @@ var UserPool = require('./userPool');
 var Cfg = require('./cfg/cfgMgr');
 var app = Http.createServer(Express());
 var io = IO(app);
+var Users = require('./user');
 Cfg.getDbCfg(function (db) {
     db.Init();
 });

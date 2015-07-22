@@ -10,7 +10,7 @@
 var UserStatus = exports.UserStatus;
 var User = (function () {
     function User(socket) {
-        this.status = UserStatus.online;
+        this.status = 1 /* online */;
         this.socket = socket;
     }
     User.prototype.toEntity = function () {
@@ -19,6 +19,7 @@ var User = (function () {
         r.name = this.name;
         r.loginId = this.loginId;
         r.type = this.type;
+        r.id = this.socket.id + "_" + this.loginId;
         return r;
     };
     return User;
